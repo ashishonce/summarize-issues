@@ -4497,9 +4497,8 @@ async function run(inputs) {
     const configSections = JSON.parse(config);
     console.log('Querying for issues ...');
     const sections = [];
-    const since = '2022-11-03';
     for (const configSection of configSections) {
-        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], since);
+        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since || '');
         sections.push(Object.assign(Object.assign({}, configSection), { issues, status: status.getStatus(issues.length, configSection.threshold) }));
     }
     ;
@@ -4517,7 +4516,7 @@ async function queryIssues(octokit, repoContext, labels, excludeLabels, since) {
     // It won't let you use the endpoint method as documented: https://octokit.github.io/rest.js/v17#pagination.
     // Work around by using the route string instead.
     //octokit.issues.listForRepo,
-    "GET /repos/:owner/:repo/issues", Object.assign(Object.assign({}, repoContext), { labels: labels.join(','), state: 'open', since: '2022-11-03' }), (response) => response.data.filter(issue => filterIssue(issue, excludeLabels)));
+    "GET /repos/:owner/:repo/issues", Object.assign(Object.assign({}, repoContext), { labels: labels.join(','), state: 'open', since: since }), (response) => response.data.filter(issue => filterIssue(issue, excludeLabels)));
 }
 function filterIssue(issue, excludeLabels) {
     return !issue.pull_request && !issue.labels.some(label => excludeLabels.includes(label.name));

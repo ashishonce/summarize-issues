@@ -19,9 +19,8 @@ export async function run(inputs: {
 
     console.log('Querying for issues ...');
     const sections = [];
-    const since = '2022-11-03'
     for (const configSection of configSections) {
-        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], since);
+        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since||'');
         sections.push({
             ...configSection,
             issues,
@@ -50,7 +49,7 @@ async function queryIssues(octokit: Octokit, repoContext: RepoContext, labels: s
             ...repoContext,
             labels: labels.join(','),
             state: 'open',
-            since: '2022-11-03'    
+            since: since    
         },
         (response: Octokit.Response<Octokit.IssuesListForRepoResponse>) => response.data.filter(issue => filterIssue(issue, excludeLabels)));
 }

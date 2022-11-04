@@ -12,7 +12,8 @@ export interface ConfigSection {
     section: string,
     labels: string[],
     excludeLabels?: string[],
-    threshold: number
+    threshold: number,
+    since?: string
 }
 
 // What comes out of the config file plus whatever else we need to write the report
