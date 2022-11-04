@@ -19,7 +19,7 @@ export async function run(inputs: {
 
     console.log('Querying for issues ...');
     const sections = [];
-    const since = '2022-10-01'
+    const since = '2022-11-03'
     for (const configSection of configSections) {
         const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], since);
         sections.push({
