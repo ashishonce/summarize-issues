@@ -20,7 +20,7 @@ export async function run(inputs: {
     console.log('Querying for issues ...');
     const sections = [];
     for (const configSection of configSections) {
-        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since||'');
+        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since||'2022-09-1');
         sections.push({
             ...configSection,
             issues,
