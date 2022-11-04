@@ -50,7 +50,7 @@ async function queryIssues(octokit: Octokit, repoContext: RepoContext, labels: s
             ...repoContext,
             labels: labels.join(','),
             state: 'open',
-            since: since    
+            since: '2022-11-03'    
         },
         (response: Octokit.Response<Octokit.IssuesListForRepoResponse>) => response.data.filter(issue => filterIssue(issue, excludeLabels)));
 }
