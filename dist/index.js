@@ -4504,6 +4504,7 @@ async function run(inputs) {
             const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since || '2022-09-1');
             issues.push(issues_local);
         }
+        console.log(issues);
         sections.push(Object.assign(Object.assign({}, configSection), { issues }));
     }
     ;

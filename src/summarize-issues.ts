@@ -33,6 +33,7 @@ export async function run(inputs: {
             issues.push(issues_local)
 
         }
+        console.log(issues)
         sections.push({
             ...configSection,
             issues
