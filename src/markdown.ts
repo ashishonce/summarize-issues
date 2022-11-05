@@ -10,44 +10,58 @@ export function* generateSummary(title: string, sections: Section[]) {
     }
 }
 
-export function* generateDetails(sections: Section[], repoContext: RepoContext) {
-    yield h2('Details');
-    for (const section of sections) {
-        yield* sectionDetails(section, repoContext);
-    }
-}
+// export function* generateDetails(sections: Section[], repoContext: RepoContext) {
+//     yield h2('Details');
+//     for (const section of sections) {
+//         yield* sectionDetails(section, repoContext);
+//     }
+// }
 
 function* sectionSummary(section: Section) {
     // When generating header links, the red status needs some additional characters at the front because of the emoji it uses.
     // However GitHub-Flavored Markdown generates IDs for its headings, the other statuses aren't affected and just drop theirs.
     // It probably has to do with the Unicode ranges.
     const redStatusIdFragment = '%EF%B8%8F';
-
     const sectionAnchor = '#'
-        + (section.status === '❤️🥵' ? redStatusIdFragment : '')
+        + ('❤️🥵')
         + `-${hyphenate(section.section)}-query`;
+     
+    const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')}` 
+    let section_postfix = ``
+    for( const sec in section){
+        
+        section_postfix = section_postfix + `|${section.issues.length}`
+    
 
-    yield `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold} | ${section.issues.length} | ${section.status} |`;
-}
-
-function* sectionDetails(section: Section, repoContext: RepoContext) {
-    const owners = sumIssuesForOwners(section.issues);
-
-    yield h3(`${section.status} ${section.section} ${link('(query)', issuesQuery(repoContext, section.labels, section.excludeLabels || []))}`);
-    yield `Total: ${section.issues.length}\n`;
-    yield `Threshold: ${section.threshold}\n`;
-    yield `Labels: ${section.labels.map(code).concat((section.excludeLabels|| []).map(x => strike(code(x)))).join(', ')}\n`
-    yield '| Owner | Count |';
-    yield '| -- | -- |';
-
-    // Sort the table in descending order of issue count
-    const ownersByIssueCount = Object.keys(owners).sort((a, b) => owners[b] - owners[a]);
-    for (const key of ownersByIssueCount) {
-        // `key` is the owner's login
-        const queryUrl = issuesQuery(repoContext, section.labels, section.excludeLabels || [], key);
-        yield `| ${link(key, queryUrl)} | ${owners[key]} |`;
     }
+    yield  section_prefix + section_postfix + `|`;
+    // const redStatusIdFragment = '%EF%B8%8F';
+
+    // const sectionAnchor = '#'
+    //     + (section.status === '❤️🥵' ? redStatusIdFragment : '')
+    //     + `-${hyphenate(section.section)}-query`;
+
+    // yield `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold} | ${section.issues.length} | ${section.status} |`;
 }
+
+// function* sectionDetails(section: Section, repoContext: RepoContext) {
+//     const owners = sumIssuesForOwners(section.issues);
+
+//     yield h3(`${section.status} ${section.section} ${link('(query)', issuesQuery(repoContext, section.labels, section.excludeLabels || []))}`);
+//     yield `Total: ${section.issues.length}\n`;
+//     yield `Threshold: ${section.threshold}\n`;
+//     yield `Labels: ${section.labels.map(code).concat((section.excludeLabels|| []).map(x => strike(code(x)))).join(', ')}\n`
+//     yield '| Owner | Count |';
+//     yield '| -- | -- |';
+
+//     // Sort the table in descending order of issue count
+//     const ownersByIssueCount = Object.keys(owners).sort((a, b) => owners[b] - owners[a]);
+//     for (const key of ownersByIssueCount) {
+//         // `key` is the owner's login
+//         const queryUrl = issuesQuery(repoContext, section.labels, section.excludeLabels || [], key);
+//         yield `| ${link(key, queryUrl)} | ${owners[key]} |`;
+//     }
+// }
 
 // Markdown helpers -- not the least bit safe for handling user input, so don't copy these for general use.
 const h2 = (text: string) => `## ${text}`;

@@ -4490,7 +4490,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const fs = __importStar(__webpack_require__(747));
 const markdown = __importStar(__webpack_require__(716));
-const status = __importStar(__webpack_require__(895));
 async function run(inputs) {
     console.log(`Reading the config file at ${inputs.configPath} ...`);
     const config = fs.readFileSync(inputs.configPath, 'utf8');
@@ -4498,8 +4497,14 @@ async function run(inputs) {
     console.log('Querying for issues ...');
     const sections = [];
     for (const configSection of configSections) {
-        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since || '2022-09-1');
-        sections.push(Object.assign(Object.assign({}, configSection), { issues, status: status.getStatus(issues.length, configSection.threshold) }));
+        let issues = [];
+        for (var month = 0; month < configSection.months; month++) {
+            const SIX_MONTHS_AGO = new Date();
+            SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - month);
+            const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since || '2022-09-1');
+            issues.push(issues_local);
+        }
+        sections.push(Object.assign(Object.assign({}, configSection), { issues }));
     }
     ;
     console.log('Generating the report Markdown ...');
@@ -4524,7 +4529,6 @@ function filterIssue(issue, excludeLabels) {
 function generateReport(title, sections, repoContext) {
     return Array.from([
         ...markdown.generateSummary(title, sections),
-        ...markdown.generateDetails(sections, repoContext)
     ]).join('\n');
 }
 
@@ -10301,7 +10305,7 @@ module.exports = (promise, onFinally) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDetails = exports.generateSummary = void 0;
+exports.generateSummary = void 0;
 function* generateSummary(title, sections) {
     yield h3(title);
     yield h3('Summary');
@@ -10312,39 +10316,48 @@ function* generateSummary(title, sections) {
     }
 }
 exports.generateSummary = generateSummary;
-function* generateDetails(sections, repoContext) {
-    yield h2('Details');
-    for (const section of sections) {
-        yield* sectionDetails(section, repoContext);
-    }
-}
-exports.generateDetails = generateDetails;
+// export function* generateDetails(sections: Section[], repoContext: RepoContext) {
+//     yield h2('Details');
+//     for (const section of sections) {
+//         yield* sectionDetails(section, repoContext);
+//     }
+// }
 function* sectionSummary(section) {
     // When generating header links, the red status needs some additional characters at the front because of the emoji it uses.
     // However GitHub-Flavored Markdown generates IDs for its headings, the other statuses aren't affected and just drop theirs.
     // It probably has to do with the Unicode ranges.
     const redStatusIdFragment = '%EF%B8%8F';
     const sectionAnchor = '#'
-        + (section.status === '❤️🥵' ? redStatusIdFragment : '')
+        + ('❤️🥵')
         + `-${hyphenate(section.section)}-query`;
-    yield `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold} | ${section.issues.length} | ${section.status} |`;
-}
-function* sectionDetails(section, repoContext) {
-    const owners = sumIssuesForOwners(section.issues);
-    yield h3(`${section.status} ${section.section} ${link('(query)', issuesQuery(repoContext, section.labels, section.excludeLabels || []))}`);
-    yield `Total: ${section.issues.length}\n`;
-    yield `Threshold: ${section.threshold}\n`;
-    yield `Labels: ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')}\n`;
-    yield '| Owner | Count |';
-    yield '| -- | -- |';
-    // Sort the table in descending order of issue count
-    const ownersByIssueCount = Object.keys(owners).sort((a, b) => owners[b] - owners[a]);
-    for (const key of ownersByIssueCount) {
-        // `key` is the owner's login
-        const queryUrl = issuesQuery(repoContext, section.labels, section.excludeLabels || [], key);
-        yield `| ${link(key, queryUrl)} | ${owners[key]} |`;
+    const section_prefix = `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')}`;
+    let section_postfix = ``;
+    for (const sec in section) {
+        section_postfix = section_postfix + `|${section.issues.length}`;
     }
+    yield section_prefix + section_postfix + `|`;
+    // const redStatusIdFragment = '%EF%B8%8F';
+    // const sectionAnchor = '#'
+    //     + (section.status === '❤️🥵' ? redStatusIdFragment : '')
+    //     + `-${hyphenate(section.section)}-query`;
+    // yield `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold} | ${section.issues.length} | ${section.status} |`;
 }
+// function* sectionDetails(section: Section, repoContext: RepoContext) {
+//     const owners = sumIssuesForOwners(section.issues);
+//     yield h3(`${section.status} ${section.section} ${link('(query)', issuesQuery(repoContext, section.labels, section.excludeLabels || []))}`);
+//     yield `Total: ${section.issues.length}\n`;
+//     yield `Threshold: ${section.threshold}\n`;
+//     yield `Labels: ${section.labels.map(code).concat((section.excludeLabels|| []).map(x => strike(code(x)))).join(', ')}\n`
+//     yield '| Owner | Count |';
+//     yield '| -- | -- |';
+//     // Sort the table in descending order of issue count
+//     const ownersByIssueCount = Object.keys(owners).sort((a, b) => owners[b] - owners[a]);
+//     for (const key of ownersByIssueCount) {
+//         // `key` is the owner's login
+//         const queryUrl = issuesQuery(repoContext, section.labels, section.excludeLabels || [], key);
+//         yield `| ${link(key, queryUrl)} | ${owners[key]} |`;
+//     }
+// }
 // Markdown helpers -- not the least bit safe for handling user input, so don't copy these for general use.
 const h2 = (text) => `## ${text}`;
 const h3 = (text) => `### ${text}`;
@@ -26564,29 +26577,6 @@ function set(object, path, value) {
 }
 
 module.exports = set;
-
-
-/***/ }),
-
-/***/ 895:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStatus = void 0;
-function getStatus(issueCount, threshold) {
-    if (issueCount < threshold) {
-        return '💚🥳';
-    }
-    else if (issueCount === threshold) {
-        return '💛😬';
-    }
-    else {
-        return '❤️🥵';
-    }
-}
-exports.getStatus = getStatus;
 
 
 /***/ }),

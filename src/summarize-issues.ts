@@ -4,6 +4,7 @@ import type { Octokit } from '@octokit/rest';
 
 import * as markdown from './markdown';
 import * as status from './status';
+
 import type { ConfigSection, RepoContext, Section, Issue } from './types';
 
 export async function run(inputs: {
@@ -18,13 +19,23 @@ export async function run(inputs: {
     const configSections: ConfigSection[] = JSON.parse(config);
 
     console.log('Querying for issues ...');
-    const sections = [];
+    const sections : Section [] =  [];
+
+
+    
+
     for (const configSection of configSections) {
-        const issues = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since||'2022-09-1');
+        let issues =[];
+        for( var month = 0; month < configSection.months; month++){
+            const SIX_MONTHS_AGO = new Date();
+            SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - month);
+            const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since||'2022-09-1');
+            issues.push(issues_local)
+
+        }
         sections.push({
             ...configSection,
-            issues,
-            status: status.getStatus(issues.length, configSection.threshold)
+            issues
         }); 
     };
 
@@ -61,6 +72,6 @@ function filterIssue(issue: Octokit.IssuesListForRepoResponseItem, excludeLabels
 function generateReport(title: string, sections: Section[], repoContext: RepoContext): string {
     return Array.from([
         ...markdown.generateSummary(title, sections),
-        ...markdown.generateDetails(sections, repoContext)
+        //...markdown.generateDetails(sections, repoContext)
     ]).join('\n');
 }

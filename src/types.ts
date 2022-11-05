@@ -13,11 +13,11 @@ export interface ConfigSection {
     labels: string[],
     excludeLabels?: string[],
     threshold: number,
-    since?: string
+    since?: string,
+    months:number
 }
 
 // What comes out of the config file plus whatever else we need to write the report
 export type Section = ConfigSection & {
-    issues: Issue[],
-    status: Status
+    issues: Issue[][],
 }
