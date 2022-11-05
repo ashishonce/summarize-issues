@@ -2120,6 +2120,14 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 93:
+/***/ (function() {
+
+eval("require")("./convertotable");
+
+
+/***/ }),
+
 /***/ 102:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -10310,7 +10318,7 @@ module.exports = (promise, onFinally) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSummary = void 0;
-const convert = __webpack_require__(819);
+const convert = __webpack_require__(93);
 function* generateSummary(title, sections) {
     yield h3(title);
     yield h3('Summary');
@@ -11254,14 +11262,6 @@ function isexe (path, options, cb) {
 function sync (path, options) {
   return checkStat(fs.statSync(path), path, options)
 }
-
-
-/***/ }),
-
-/***/ 819:
-/***/ (function() {
-
-eval("require")("./src/convertotable");
 
 
 /***/ }),

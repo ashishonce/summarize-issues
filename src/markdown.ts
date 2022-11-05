@@ -1,5 +1,5 @@
 import type { Issue, RepoContext, Section } from './types';
-const convert = require("./src/convertotable")
+const convert = require("./convertotable")
 
 export function* generateSummary(title: string, sections: Section[]) {
     yield h3(title);
