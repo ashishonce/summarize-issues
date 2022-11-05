@@ -10328,11 +10328,11 @@ exports.generateSummary = generateSummary;
 // }
 function createtableMonthly(sections) {
     let headers = [];
-    Object.keys(sections[0]).forEach((value, key) => headers.push({ name: key }));
-    let $heads = headers.map((hd) => `<th style="text-align:'center'}">${hd.name}</th>`);
+    Object.keys(sections[0]).forEach((key, value) => headers.push({ name: key }));
+    let $heads = headers.map((hd) => `<th >${hd.name}</th>`);
     let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
     let $rows = sections.map((rowData) => {
-        let $tds = headers.map((hd) => `<td style="text-align: 'center'}">${rowData[hd.name] || ''}</td>`);
+        let $tds = headers.map((hd) => `<td >${rowData[hd.name] || ''}</td>`);
         return `<tr>${$tds.join('')}</tr>`;
     });
     let $body = `<tbody>${$rows.join('')}</tbody>`;

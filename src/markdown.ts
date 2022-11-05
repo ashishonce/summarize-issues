@@ -23,13 +23,13 @@ export function* generateSummary(title: string, sections: Section[]) {
 
 function createtableMonthly(sections:any){
     let headers:any = [];
-    Object.keys(sections[0]).forEach( (value:any, key:any) => headers.push({name:key}))
+    Object.keys(sections[0]).forEach( (key:any ,value:any, ) => headers.push({name:key}))
    
-    let $heads = headers.map((hd:any) => `<th style="text-align:'center'}">${hd.name}</th>`);
+    let $heads = headers.map((hd:any) => `<th >${hd.name}</th>`);
     let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
 
     let $rows = sections.map((rowData:any) => {
-        let $tds = headers.map((hd:any) => `<td style="text-align: 'center'}">${rowData[hd.name] || ''}</td>`);
+        let $tds = headers.map((hd:any) => `<td >${rowData[hd.name] || ''}</td>`);
         return `<tr>${$tds.join('')}</tr>`;
       });
 
