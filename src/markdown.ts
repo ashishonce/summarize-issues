@@ -35,7 +35,7 @@ function createtableMonthly(sections:any){
 
 
       let $body = `<tbody>${$rows.join('')}</tbody>`;
-      let rst = `<table>${$header}${$body}</table>`;
+      let rst = `<table>${$body}</table>`;
       return rst;
 
 } 
