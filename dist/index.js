@@ -10328,7 +10328,7 @@ exports.generateSummary = generateSummary;
 // }
 function createtableMonthly(sections) {
     let headers = [];
-    sections[0].forEach((value, key) => headers.push({ name: key }));
+    Object.keys(sections[0]).forEach((value, key) => headers.push({ name: key }));
     let $heads = headers.map((hd) => `<th style="text-align:'center'}">${hd.name}</th>`);
     let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
     let $rows = sections.map((rowData) => {

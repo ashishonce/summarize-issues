@@ -23,7 +23,7 @@ export function* generateSummary(title: string, sections: Section[]) {
 
 function createtableMonthly(sections:any){
     let headers:any = [];
-    sections[0].forEach( (value:any, key:any) => headers.push({name:key}))
+    Object.keys(sections[0]).forEach( (value:any, key:any) => headers.push({name:key}))
    
     let $heads = headers.map((hd:any) => `<th style="text-align:'center'}">${hd.name}</th>`);
     let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
