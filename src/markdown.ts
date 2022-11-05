@@ -1,4 +1,5 @@
 import type { Issue, RepoContext, Section } from './types';
+const convert = require("./src/convertotable")
 
 export function* generateSummary(title: string, sections: Section[]) {
     yield h3(title);
@@ -27,16 +28,21 @@ function* sectionSummary(section: Section) {
         + `-${hyphenate(section.section)}-query`;
      
     const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`
-    let section_postfix = ``
+    let section_middle = ``
     console.log(section)
     let pervious_count = 0
     //const issues = section.issues;
+    
+    let data_list = []
     for( const sect of section.issues){
-        console.log(sect)
-        section_postfix = section_postfix + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
+        data_list.push({ month: sect.month_text , count: (sect.issues.length - pervious_count)})
+
+        //section_middle = section_middle + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
         pervious_count = sect.issues.length
     }
-    yield  section_prefix + section_postfix + `|`;
+    let convertedata = convert(data_list)
+
+    yield  section_prefix + convertedata + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
 
     // const sectionAnchor = '#'
