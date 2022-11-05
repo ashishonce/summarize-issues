@@ -1,9 +1,0 @@
-[
-    {
-      "section": "BugsNov",
-      "labels": ["bug"],
-      "threshold": 20,
-      "since": "2022-11-01",
-      "months": 3
-    }
-  ]
