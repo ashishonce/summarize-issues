@@ -10304,13 +10304,12 @@ module.exports = (promise, onFinally) => {
 /***/ }),
 
 /***/ 716:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSummary = void 0;
-const convertotable_1 = __webpack_require__(871);
 function* generateSummary(title, sections) {
     yield h3(title);
     yield h3('Summary');
@@ -10327,6 +10326,19 @@ exports.generateSummary = generateSummary;
 //         yield* sectionDetails(section, repoContext);
 //     }
 // }
+function createtableMonthly(sections) {
+    let headers = [];
+    sections[0].forEach((value, key) => headers.push({ name: key }));
+    let $heads = headers.map((hd) => `<th style="text-align:'center'}">${hd.name}</th>`);
+    let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
+    let $rows = sections.map((rowData) => {
+        let $tds = headers.map((hd) => `<td style="text-align: 'center'}">${rowData[hd.name] || ''}</td>`);
+        return `<tr>${$tds.join('')}</tr>`;
+    });
+    let $body = `<tbody>${$rows.join('')}</tbody>`;
+    let rst = `<table>${$header}${$body}</table>`;
+    return rst;
+}
 function* sectionSummary(section) {
     // When generating header links, the red status needs some additional characters at the front because of the emoji it uses.
     // However GitHub-Flavored Markdown generates IDs for its headings, the other statuses aren't affected and just drop theirs.
@@ -10336,8 +10348,6 @@ function* sectionSummary(section) {
         + ('❤️🥵')
         + `-${hyphenate(section.section)}-query`;
     const section_prefix = `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`;
-    let section_middle = ``;
-    console.log(section);
     let pervious_count = 0;
     //const issues = section.issues;
     let data_list = [];
@@ -10346,7 +10356,8 @@ function* sectionSummary(section) {
         //section_middle = section_middle + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
         pervious_count = sect.issues.length;
     }
-    let convertedata = convertotable_1.arrayToTable(data_list);
+    let convertedata = createtableMonthly(data_list);
+    console.log(convertedata);
     yield section_prefix + convertedata + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
     // const sectionAnchor = '#'
@@ -25525,55 +25536,6 @@ module.exports = function (str) {
 		bin + (arg ? ' ' + arg : '')
 	);
 };
-
-
-/***/ }),
-
-/***/ 871:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayToTable = void 0;
-/**
- * Generate markdown table from an array of objects
- *
- * @param  {Array} array    Array of objects
- * @param  {Array} columns  Optional, table column names, otherwise taken from the keys of the first object
- * @param  {String} alignment Optional table alignment. Can be 'center' (default), 'left' or 'right'
- *
- * @return {String} Markdown table
- */
-function* arrayToTable(array, columns = '', alignment = 'center') {
-    var table = "";
-    var separator = {
-        'left': ':---',
-        'right': '---:',
-        'center': '---'
-    };
-    // Generate column list
-    var cols = columns
-        ? columns.split(",")
-        : Object.keys(array[0]);
-    // Generate table headers
-    table += cols.join(" | ");
-    table += "\r\n";
-    // Generate table header seperator
-    table += cols.map(function () {
-        return '---';
-    }).join(' | ');
-    table += "\r\n";
-    // Generate table body
-    array.forEach(function (item) {
-        table += cols.map(function (key) {
-            return String(item[key] || "");
-        }).join(" | ") + "\r\n";
-    });
-    // Return table
-    return table;
-}
-exports.arrayToTable = arrayToTable;
 
 
 /***/ }),

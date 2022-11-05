@@ -21,6 +21,25 @@ export function* generateSummary(title: string, sections: Section[]) {
 //     }
 // }
 
+function createtableMonthly(sections:any){
+    let headers:any = [];
+    sections[0].forEach( (value:any, key:any) => headers.push({name:key}))
+   
+    let $heads = headers.map((hd:any) => `<th style="text-align:'center'}">${hd.name}</th>`);
+    let $header = `<thead><tr>${$heads.join('')}</tr></thead>`;
+
+    let $rows = sections.map((rowData:any) => {
+        let $tds = headers.map((hd:any) => `<td style="text-align: 'center'}">${rowData[hd.name] || ''}</td>`);
+        return `<tr>${$tds.join('')}</tr>`;
+      });
+
+
+      let $body = `<tbody>${$rows.join('')}</tbody>`;
+      let rst = `<table>${$header}${$body}</table>`;
+      return rst;
+
+} 
+
 function* sectionSummary(section: Section) {
     // When generating header links, the red status needs some additional characters at the front because of the emoji it uses.
     // However GitHub-Flavored Markdown generates IDs for its headings, the other statuses aren't affected and just drop theirs.
@@ -31,8 +50,6 @@ function* sectionSummary(section: Section) {
         + `-${hyphenate(section.section)}-query`;
      
     const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`
-    let section_middle = ``
-    console.log(section)
     let pervious_count = 0
     //const issues = section.issues;
     
@@ -43,8 +60,8 @@ function* sectionSummary(section: Section) {
         //section_middle = section_middle + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
         pervious_count = sect.issues.length
     }
-    let convertedata = arrayToTable(data_list)
-
+    let convertedata = createtableMonthly(data_list)
+    console.log(convertedata)
     yield  section_prefix + convertedata + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
 

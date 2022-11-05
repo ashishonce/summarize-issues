@@ -7,7 +7,7 @@
  *
  * @return {String} Markdown table
  */
- export function* arrayToTable (array:any, columns = '', alignment = 'center') {
+ module.exports = function arrayToTable (array, columns, alignment = 'center') {
     var table = ""
     var separator = {
       'left': ':---',
@@ -16,7 +16,9 @@
     }
   
     // Generate column list
-    var cols = Object.keys(array[0])
+    var cols = columns
+      ? columns.split(",")
+      : Object.keys(array[0])
   
     // Generate table headers
     table += cols.join(" | ")
@@ -24,18 +26,17 @@
   
     // Generate table header seperator
     table += cols.map(function () {
-      return '---'
+      return separator[alignment] || separator.center
     }).join(' | ')
     table += "\r\n"
   
     // Generate table body
-    array.forEach(function (item:any) {
-      table += cols.map(function (key:any) {
+    array.forEach(function (item) {
+      table += cols.map(function (key) {
         return String(item[key] || "")
       }).join(" | ") + "\r\n"
     })
   
     // Return table
-    console.log(table)
     return table
   }
