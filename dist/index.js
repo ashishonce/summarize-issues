@@ -2120,14 +2120,6 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 93:
-/***/ (function() {
-
-eval("require")("./convertotable");
-
-
-/***/ }),
-
 /***/ 102:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -10318,7 +10310,7 @@ module.exports = (promise, onFinally) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSummary = void 0;
-const convert = __webpack_require__(93);
+const convertotable_1 = __webpack_require__(871);
 function* generateSummary(title, sections) {
     yield h3(title);
     yield h3('Summary');
@@ -10354,7 +10346,7 @@ function* sectionSummary(section) {
         //section_middle = section_middle + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
         pervious_count = sect.issues.length;
     }
-    let convertedata = convert(data_list);
+    let convertedata = convertotable_1.arrayToTable(data_list);
     yield section_prefix + convertedata + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
     // const sectionAnchor = '#'
@@ -25533,6 +25525,55 @@ module.exports = function (str) {
 		bin + (arg ? ' ' + arg : '')
 	);
 };
+
+
+/***/ }),
+
+/***/ 871:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.arrayToTable = void 0;
+/**
+ * Generate markdown table from an array of objects
+ *
+ * @param  {Array} array    Array of objects
+ * @param  {Array} columns  Optional, table column names, otherwise taken from the keys of the first object
+ * @param  {String} alignment Optional table alignment. Can be 'center' (default), 'left' or 'right'
+ *
+ * @return {String} Markdown table
+ */
+function* arrayToTable(array, columns = undefined, alignment = 'center') {
+    var table = "";
+    var separator = {
+        'left': ':---',
+        'right': '---:',
+        'center': '---'
+    };
+    // Generate column list
+    var cols = columns
+        ? columns.split(",")
+        : Object.keys(array[0]);
+    // Generate table headers
+    table += cols.join(" | ");
+    table += "\r\n";
+    // Generate table header seperator
+    table += cols.map(function () {
+        return separator[alignment] || separator.center;
+    }).join(' | ');
+    table += "\r\n";
+    // Generate table body
+    array.forEach(function (item) {
+        table += cols.map(function (key) {
+            return String(item[key] || "");
+        }).join(" | ") + "\r\n";
+    });
+    // Return table
+    return table;
+}
+exports.arrayToTable = arrayToTable;
 
 
 /***/ }),

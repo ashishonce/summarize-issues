@@ -1,5 +1,8 @@
 import type { Issue, RepoContext, Section } from './types';
-const convert = require("./convertotable")
+import {arrayToTable} from "./convertotable"
+
+
+
 
 export function* generateSummary(title: string, sections: Section[]) {
     yield h3(title);
@@ -40,7 +43,7 @@ function* sectionSummary(section: Section) {
         //section_middle = section_middle + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
         pervious_count = sect.issues.length
     }
-    let convertedata = convert(data_list)
+    let convertedata = arrayToTable(data_list)
 
     yield  section_prefix + convertedata + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
