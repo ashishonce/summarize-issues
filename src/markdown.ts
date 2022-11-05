@@ -30,7 +30,7 @@ function* sectionSummary(section: Section) {
     let section_postfix = ``
     for( const sec in section){
         
-        section_postfix = section_postfix + `|${sec.length}`
+        section_postfix = section_postfix + `${sec.length}` + `,`
     
     }
     yield  section_prefix + section_postfix + `|`;
