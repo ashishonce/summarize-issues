@@ -3,8 +3,8 @@ import type { Issue, RepoContext, Section } from './types';
 export function* generateSummary(title: string, sections: Section[]) {
     yield h3(title);
     yield h3('Summary');
-    yield '| Section Title | Labels | Threshold | Count | Status |';
-    yield '| -- | -- | -- | -- | -- |';
+    yield '| Section Title | Labels | Threshold | Monthly Count | Status |';
+    yield '| :--- |  :----:  |  :----:  |  :----:  |  :----:  |';
     for (const section of sections) {
         yield* sectionSummary(section);
     }
@@ -29,9 +29,10 @@ function* sectionSummary(section: Section) {
     const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`
     let section_postfix = ``
     console.log(section)
+    //const issues = section.issues;
     for( const sect of section.issues){
         console.log(sect)
-        section_postfix = section_postfix + `${sect.length}` + `,`
+        section_postfix = section_postfix + `${sect.month_text} : ${sect.issues.length}` + `,`
     
     }
     yield  section_prefix + section_postfix + `|`;

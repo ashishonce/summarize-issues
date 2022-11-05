@@ -4498,11 +4498,13 @@ async function run(inputs) {
     const sections = [];
     for (const configSection of configSections) {
         let issues = [];
-        for (var month = 0; month < configSection.months; month++) {
+        for (var mt = 0; mt < configSection.months; mt++) {
             const SIX_MONTHS_AGO = new Date();
-            SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - month);
-            const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], configSection.since || '2022-09-1');
-            issues.push(issues_local);
+            SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - mt);
+            const month = SIX_MONTHS_AGO.toLocaleString('default', { month: 'long' });
+            var date_text = SIX_MONTHS_AGO.toISOString().split('T')[0];
+            const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], date_text);
+            issues.push({ month_text: month, issues: issues_local });
         }
         console.log(issues);
         sections.push(Object.assign(Object.assign({}, configSection), { issues }));
@@ -10310,8 +10312,8 @@ exports.generateSummary = void 0;
 function* generateSummary(title, sections) {
     yield h3(title);
     yield h3('Summary');
-    yield '| Section Title | Labels | Threshold | Count | Status |';
-    yield '| -- | -- | -- | -- | -- |';
+    yield '| Section Title | Labels | Threshold | Monthly Count | Status |';
+    yield '| :--- |  :----:  |  :----:  |  :----:  |  :----:  |';
     for (const section of sections) {
         yield* sectionSummary(section);
     }
@@ -10334,9 +10336,10 @@ function* sectionSummary(section) {
     const section_prefix = `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`;
     let section_postfix = ``;
     console.log(section);
+    //const issues = section.issues;
     for (const sect of section.issues) {
         console.log(sect);
-        section_postfix = section_postfix + `${sect.length}` + `,`;
+        section_postfix = section_postfix + `${sect.month_text} : ${sect.issues.length}` + `,`;
     }
     yield section_prefix + section_postfix + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
