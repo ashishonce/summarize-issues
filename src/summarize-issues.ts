@@ -24,11 +24,14 @@ export async function run(inputs: {
     for (const configSection of configSections) {
         let issues =[];
         for( var mt = 0; mt < configSection.months; mt++){
-            const SIX_MONTHS_AGO = new Date();
-            SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - mt);
             
-            const month = SIX_MONTHS_AGO.toLocaleString('default', { month: 'long' });
-            var date_text = SIX_MONTHS_AGO.toISOString().split('T')[0]
+            let current_date = new Date();
+            const MONTHS_AGO = new Date(current_date.getFullYear(), current_date.getMonth(), 1);
+
+            MONTHS_AGO.setMonth(MONTHS_AGO.getMonth() - mt);
+            
+            const month = MONTHS_AGO.toLocaleString('default', { month: 'long' });
+            var date_text = MONTHS_AGO.toISOString().split('T')[0]
             const issues_local = await queryIssues(inputs.octokit, inputs.repoContext, configSection.labels, configSection.excludeLabels || [], date_text);
             issues.push({month_text : month,  issues: issues_local})
 

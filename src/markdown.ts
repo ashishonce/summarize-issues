@@ -29,11 +29,12 @@ function* sectionSummary(section: Section) {
     const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`
     let section_postfix = ``
     console.log(section)
+    let pervious_count = 0
     //const issues = section.issues;
     for( const sect of section.issues){
         console.log(sect)
-        section_postfix = section_postfix + `${sect.month_text} : ${sect.issues.length}` + `,`
-    
+        section_postfix = section_postfix + `${sect.month_text} : ${sect.issues.length - pervious_count}` + `,`
+        pervious_count = sect.issues.length
     }
     yield  section_prefix + section_postfix + `|`;
     // const redStatusIdFragment = '%EF%B8%8F';
