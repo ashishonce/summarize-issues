@@ -7,7 +7,7 @@
  *
  * @return {String} Markdown table
  */
- export function* arrayToTable (array:any, columns = undefined, alignment = 'center') {
+ export function* arrayToTable (array:any, columns = '', alignment = 'center') {
     var table = ""
     var separator = {
       'left': ':---',

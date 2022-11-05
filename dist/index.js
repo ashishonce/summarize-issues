@@ -25545,7 +25545,7 @@ exports.arrayToTable = void 0;
  *
  * @return {String} Markdown table
  */
-function* arrayToTable(array, columns = undefined, alignment = 'center') {
+function* arrayToTable(array, columns = '', alignment = 'center') {
     var table = "";
     var separator = {
         'left': ':---',
@@ -25561,7 +25561,7 @@ function* arrayToTable(array, columns = undefined, alignment = 'center') {
     table += "\r\n";
     // Generate table header seperator
     table += cols.map(function () {
-        return separator[alignment] || separator.center;
+        return '---';
     }).join(' | ');
     table += "\r\n";
     // Generate table body
