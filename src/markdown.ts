@@ -28,9 +28,10 @@ function* sectionSummary(section: Section) {
      
     const section_prefix =  `| ${link(section.section, sectionAnchor)} | ${section.labels.map(code).concat((section.excludeLabels || []).map(x => strike(code(x)))).join(', ')} | ${section.threshold}|`
     let section_postfix = ``
-    for( const sec in section){
-        
-        section_postfix = section_postfix + `${sec.length}` + `,`
+    console.log(section)
+    for( const sect of section.issues){
+        console.log(sect)
+        section_postfix = section_postfix + `${sect.length}` + `,`
     
     }
     yield  section_prefix + section_postfix + `|`;
